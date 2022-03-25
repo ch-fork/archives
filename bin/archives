@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Chua Hou
+
+set -euo pipefail
+
+export PATH=$PATH:%nix_ruby_path%
+cd $(dirname $(dirname $0))
+case "${1:-UNSET}" in
+	exec)
+		shift 1
+		exec %nix_gems_path%/bin/bundle exec "$@"
+		;;
+	start)
+		RUN=1 exec %nix_gems_path%/bin/bundle exec ruby \
+			services/sqs_processor.rb --logfile=stdout
+		;;
+	*)
+		echo "Usage: $0 { start | exec ... }"
+		;;
+esac
